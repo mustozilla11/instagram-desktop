@@ -6,10 +6,22 @@ use tauri::{
 };
 
 fn main() {
-    // Linux / Wayland WebKitGTK Video ve Reels Performans Ayarları
-    std::env::set_var("WEBKIT_DISABLE_DMABUF_RENDERER", "1");
-    std::env::set_var("LIBVA_DRIVER_NAME", "iHD");
-    std::env::set_var("GST_VAAPI_ALL_DRIVERS", "1");
+    // Video profili: IG_PROFILE ortam değişkeniyle seçilir (varsayılan: auto)
+    //  auto   -> WebKitGTK varsayılanları (DMA-BUF + donanım çözümleme)
+    //  swdec  -> donanım video çözücüler kapalı, yazılım çözümleme
+    //  safe   -> DMA-BUF kapalı (eski v0.1.1 davranışı)
+    match std::env::var("IG_PROFILE").as_deref() {
+        Ok("swdec") => {
+            std::env::set_var(
+                "GST_PLUGIN_FEATURE_RANK",
+                "vah264dec:0,vavp9dec:0,vaav1dec:0,vah265dec:0,vampeg2dec:0",
+            );
+        }
+        Ok("safe") => {
+            std::env::set_var("WEBKIT_DISABLE_DMABUF_RENDERER", "1");
+        }
+        _ => {}
+    }
 
     let app_version = env!("CARGO_PKG_VERSION");
     let app_title = format!("Instagram v{}", app_version);
