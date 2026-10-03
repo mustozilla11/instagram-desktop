@@ -330,4 +330,69 @@
     } else {
         createOverlay();
     }
+
+    // ==========================================
+    // Instagram Reels & Video Akıcılık Optimizasyonu
+    // ==========================================
+    function initVideoOptimizer() {
+        console.log("[Instagram Desktop] Reels ve Video optimizasyon modülü devrede.");
+
+        // GPU kompozisyonunu rahatlatmak için hafif CSS kuralları
+        const perfStyle = document.createElement('style');
+        perfStyle.id = 'ig-desktop-perf-style';
+        perfStyle.textContent = `
+            video {
+                transform: translateZ(0) !important;
+                backface-visibility: hidden !important;
+            }
+        `;
+        document.documentElement.appendChild(perfStyle);
+
+        // Ekrandan çıkan videoları hemen durdurarak GStreamer ve GPU yükünü sıfırlayan gözlemci
+        const videoObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                const video = entry.target;
+                if (!entry.isIntersecting || entry.intersectionRatio < 0.4) {
+                    if (!video.paused) {
+                        try {
+                            video.pause();
+                        } catch (_) {}
+                    }
+                }
+            });
+        }, {
+            threshold: [0, 0.2, 0.4, 0.7, 1.0]
+        });
+
+        const observedVideos = new WeakSet();
+
+        function scanAndObserve() {
+            const videos = document.querySelectorAll('video');
+            videos.forEach(v => {
+                if (!observedVideos.has(v)) {
+                    observedVideos.add(v);
+                    videoObserver.observe(v);
+                }
+            });
+        }
+
+        scanAndObserve();
+
+        // Instagram dinamik olarak yeni Reels videoları ekledikçe yakala
+        const domObserver = new MutationObserver(() => {
+            scanAndObserve();
+        });
+
+        domObserver.observe(document.body || document.documentElement, {
+            childList: true,
+            subtree: true
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initVideoOptimizer);
+    } else {
+        initVideoOptimizer();
+    }
 })();
+

@@ -6,6 +6,11 @@ use tauri::{
 };
 
 fn main() {
+    // Linux / Wayland WebKitGTK Video ve Reels Performans Ayarları
+    std::env::set_var("WEBKIT_DISABLE_DMABUF_RENDERER", "1");
+    std::env::set_var("LIBVA_DRIVER_NAME", "iHD");
+    std::env::set_var("GST_VAAPI_ALL_DRIVERS", "1");
+
     let app_version = env!("CARGO_PKG_VERSION");
     let app_title = format!("Instagram v{}", app_version);
 
