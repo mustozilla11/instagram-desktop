@@ -1,0 +1,15 @@
+[Desktop Entry]
+Name=Instagram
+Comment=Instagram Masaüstü Uygulaması (Tauri)
+Exec=/home/mustafao/.local/bin/instagram-desktop
+Icon=/home/mustafao/.gemini/antigravity/scratch/instagram-desktop/icons/512x512.png
+Terminal=false
+Type=Application
+Categories=Network;InstantMessaging;Social;
+StartupWMClass=Instagram
+Keywords=Instagram;IG;Social;Media;Fotoğraf;Paylaşım;
+Actions=Quit;
+
+[Desktop Action Quit]
+Name=Çıkış
+Exec=killall instagram-desktop
